@@ -15,10 +15,11 @@ void print_usage(char *argv[]) {
 }
 
 int main(int argc, char *argv[]) { 
-	bool newfile;
+	bool newfile = false;
     char *filepath = NULL;
     int c;
     int dbfd = -1;
+    struct dbheader_t *header = NULL;
 
     while((c = getopt(argc, argv, "nf:")) != -1) {
         switch (c) {
@@ -48,15 +49,26 @@ int main(int argc, char *argv[]) {
             perror("unable to create database file\n");
             return -1;
         }
+        if (create_db_header(dbfd, &header) == STATUS_ERROR) {
+            perror("failed to create database header\n");
+            return -1;
+        }
     } else {
         dbfd = open_db_file(filepath);
         if (dbfd == STATUS_ERROR) {
             perror("unable to open database file\n");
             return -1;
         }
+        if (validate_db_header(dbfd, &header) == STATUS_ERROR) {
+            printf("failed to validate database header\n");
+            return -1;
+        }
     }
 
     printf("Filepath: %s\n", filepath);
     printf("Newfile: %d\n", newfile);
+
+    output_file(dbfd, header);
+
     return 0;
 }
