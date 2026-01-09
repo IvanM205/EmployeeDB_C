@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     printf("Filepath: %s\n", filepath);
     printf("Newfile: %d\n", newfile);
 
-    output_file(dbfd, header);
+    output_file(dbfd, header, NULL);
 
     return 0;
 }
