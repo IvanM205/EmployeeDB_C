@@ -89,10 +89,7 @@ int main(int argc, char *argv[]) {
     }
     
     if (list) {
-        if (list_employees(dbhdr, employees) != STATUS_SUCCESS) {
-            printf("Failed to list employees\n");
-            return 0;
-        }
+        list_employees(dbhdr, employees);
     }
     
     /*
