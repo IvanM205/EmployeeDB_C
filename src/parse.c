@@ -98,6 +98,9 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
     if (NULL == hours) return STATUS_ERROR;
 
     struct employee_t *e = *employees;
+    if (sizeof(e[0]) != sizeof(struct employee_t)) {
+        return STATUS_ERROR;
+    }
     e = realloc(e, (dbhdr->count + 1)*sizeof(struct employee_t));
     if (e == NULL) {
         return STATUS_ERROR;
