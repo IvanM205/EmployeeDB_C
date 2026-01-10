@@ -10,11 +10,17 @@
 #include "common.h"
 #include "parse.h"
 
-/*
-void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
 
+void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+    int i;
+    for (i = 0; i < dbhdr->count; i++) {
+        printf("\n");
+        printf("Employee %d\n", i);
+        printf("\tName: %s\n", employees[i].name);
+        printf("\tAddress: %s\n", employees[i].address);
+        printf("\tHours: %d\n", employees[i].hours);
+    }
 }
-*/
 
 int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *addstring) {
     if (NULL == dbhdr) return STATUS_ERROR;
@@ -64,7 +70,7 @@ int read_employees(int fd, struct dbheader_t *dbhdr, struct employee_t **employe
 
     int i;
     for (i = 0; i < count; i++) {
-        employees->hours = ntohl(employees->hours);
+        employees[i].hours = ntohl(employees[i].hours);
     }
 
     *employeesOut = employees;

@@ -11,12 +11,14 @@ void print_usage(char *argv[]) {
     printf("Usage: %s =n -f <filepath>\n", argv[0]);
     printf("\t -n - create new database file\n");
     printf("\t -f - (required) path to database file\n");
+    printf("\t -l - list all employees\n");
     printf("\t -a - add via CSV list of (name, address, hours)\n");
     return;
 }
 
 int main(int argc, char *argv[]) { 
 	bool newfile = false;
+    bool list = false;
     char *filepath = NULL;
     char *addstring = NULL;
     int c;
@@ -24,13 +26,16 @@ int main(int argc, char *argv[]) {
     struct dbheader_t *dbhdr = NULL;
     struct employee_t *employees = NULL;
 
-    while((c = getopt(argc, argv, "nf:a:")) != -1) {
+    while((c = getopt(argc, argv, "nf:a:l")) != -1) {
         switch (c) {
             case 'n':
                 newfile = true;
                 break;
             case 'f':
                 filepath = optarg;
+                break;
+            case 'l':
+                list = true;
                 break;
             case 'a':
                 addstring = optarg;
@@ -81,6 +86,10 @@ int main(int argc, char *argv[]) {
             printf("Failed to add employees\n");
             return 0;
         }
+    }
+    
+    if (list) {
+        list_employees(dbhdr, employees);
     }
     
     /*
