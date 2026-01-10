@@ -98,7 +98,7 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
     if (NULL == hours) return STATUS_ERROR;
 
     struct employee_t *e = *employees;
-    e = realloc(e, dbhdr->count + 1);
+    e = realloc(e, (dbhdr->count + 1)*sizeof(struct employee_t));
     if (e == NULL) {
         return STATUS_ERROR;
     }
@@ -108,10 +108,8 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
     /* printf("Name: %s| Addres: %s| Hours: %s\n", name, address, hours); */
     strncpy(e[dbhdr->count-1].name, name, sizeof(e[dbhdr->count-1].name)-1);
     strncpy(e[dbhdr->count-1].address, address, sizeof(e[dbhdr->count-1].address)-1);
-    e[dbhdr->count-1].hours = atoi(hours);
-
     *employees = e;
-
+    free(e);
     return STATUS_SUCCESS;
 }
 
