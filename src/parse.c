@@ -74,6 +74,8 @@ int remove_employee(struct dbheader_t *dbhdr, struct employee_t **employees, cha
 }
 
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
+    if (NULL == dbhdr) return;
+    if (NULL == employees) return;
     int i;
     for (i = 0; i < dbhdr->count; i++) {
         printf("Employee %d\n", i);
