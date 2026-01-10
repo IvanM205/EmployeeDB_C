@@ -17,17 +17,22 @@ void print_usage(char *argv[]) {
 int main(int argc, char *argv[]) { 
 	bool newfile = false;
     char *filepath = NULL;
+    char *addstring = NULL;
     int c;
     int dbfd = -1;
-    struct dbheader_t *header = NULL;
+    struct dbheader_t *dbhdr = NULL;
+    struct employee_t *employees = NULL;
 
-    while((c = getopt(argc, argv, "nf:")) != -1) {
+    while((c = getopt(argc, argv, "nf:a:")) != -1) {
         switch (c) {
             case 'n':
                 newfile = true;
                 break;
             case 'f':
                 filepath = optarg;
+                break;
+            case 'a':
+                addstring = optarg;
                 break;
             case '?':
                 printf("Unknown option %c\n", c);
@@ -49,7 +54,7 @@ int main(int argc, char *argv[]) {
             perror("unable to create database file\n");
             return -1;
         }
-        if (create_db_header(dbfd, &header) == STATUS_ERROR) {
+        if (create_db_header(&dbhdr) == STATUS_ERROR) {
             perror("failed to create database header\n");
             return -1;
         }
@@ -59,16 +64,29 @@ int main(int argc, char *argv[]) {
             perror("unable to open database file\n");
             return -1;
         }
-        if (validate_db_header(dbfd, &header) == STATUS_ERROR) {
+        if (validate_db_header(dbfd, &dbhdr) == STATUS_ERROR) {
             printf("failed to validate database header\n");
             return -1;
         }
     }
 
+    if (read_employees(dbfd, dbhdr, &employees) != STATUS_SUCCESS) {
+        printf("Failed to read employees\n");
+        return 0;
+    }
+
+    if (addstring) {
+        dbhdr->count++;
+        employees = (struct employee_t*) realloc(employees, dbhdr->count*sizeof(struct employee_t));
+        add_employee(dbhdr, employees, addstring);
+    }
+    
+    /*
     printf("Filepath: %s\n", filepath);
     printf("Newfile: %d\n", newfile);
+    */
 
-    output_file(dbfd, header, NULL);
+    output_file(dbfd, dbhdr, employees);
 
     return 0;
 }
