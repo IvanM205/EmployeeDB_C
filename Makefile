@@ -6,6 +6,16 @@ run: clean default
 	./$(TARGET) -f ./mynewdb.db -n
 	./$(TARGET) -f ./mynewdb.db -a "Timmy H.,123 Sheshire Ln.,120"
 	./$(TARGET) -f ./mynewdb.db -l
+	./$(TARGET) -f ./mynewdb.db -a "Ivan Marianek,123 Sheshire Ln.,220"
+	./$(TARGET) -f ./mynewdb.db -a "Ivan Marianek,123 Sheshire Ln.,220"
+	./$(TARGET) -f ./mynewdb.db -a "Ivan Marianek,123 Sheshire Ln.,220"
+	./$(TARGET) -f ./mynewdb.db -l
+	./$(TARGET) -f ./mynewdb.db -r "Ivan Marianek"
+	./$(TARGET) -f ./mynewdb.db -l
+	./$(TARGET) -f ./mynewdb.db -a "Ivan Marianek,123 Sheshire Ln.,220"
+	./$(TARGET) -f ./mynewdb.db -l
+	./$(TARGET) -f ./mynewdb.db -u "Ivan Marianek,Bystricka 25,100"
+	./$(TARGET) -f ./mynewdb.db -l
 
 default: $(TARGET)
 

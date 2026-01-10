@@ -10,6 +10,68 @@
 #include "common.h"
 #include "parse.h"
 
+int update_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *updatestring) {
+    if (NULL == dbhdr) return STATUS_ERROR;
+    if (NULL == employees) return STATUS_ERROR;
+    if (NULL == *employees) return STATUS_ERROR;
+    if (NULL == updatestring) return STATUS_ERROR;
+
+    char *name = strtok(updatestring, ",");
+    if (NULL == name) return STATUS_ERROR;
+    char *address = strtok(NULL, ",");
+    if (NULL == address) return STATUS_ERROR;
+    char *hours = strtok(NULL, ",");
+    if (NULL == hours) return STATUS_ERROR;
+
+    int i;
+    struct employee_t *e = *employees;
+
+    for (i = 0; i < dbhdr->count; i++) {
+        if (strcmp(e[i].name, name) == 0) {
+            strncpy(e[i].address, address, sizeof(e[i].address)-1);
+            e[i].hours = atoi(hours);
+        }
+    }
+    
+    *employees = e;
+
+    return STATUS_SUCCESS;
+}
+
+int remove_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *removename) {
+    if (NULL == dbhdr) return STATUS_ERROR;
+    if (NULL == employees) return STATUS_ERROR;
+    if (NULL == *employees) return STATUS_ERROR;
+    if (NULL == removename) return STATUS_ERROR;
+
+    int i, employees_remove = 0;
+    for (i = 0; i < dbhdr->count; i++) {
+        if (strcmp((*employees)[i].name, removename) == 0) {
+            employees_remove++;
+        }
+    }
+    
+    int new_e_count = dbhdr->count - employees_remove;
+    struct employee_t *new_e = (struct employee_t *) calloc(new_e_count, sizeof(struct employee_t));
+    if (new_e == NULL) {
+        printf("Failed to malloc\n");
+        return STATUS_ERROR;
+    }
+
+    int j = 0;
+    for (i = 0; i < dbhdr->count; i++) {
+        if (strcmp((*employees)[i].name, removename) != 0) {
+            new_e[j] = (*employees)[i];
+            j++;
+        }
+    }
+
+    dbhdr->count = new_e_count;
+    free(*employees);
+    *employees = new_e;
+
+    return STATUS_SUCCESS;
+}
 
 void list_employees(struct dbheader_t *dbhdr, struct employee_t *employees) {
     int i;
@@ -43,7 +105,7 @@ int add_employee(struct dbheader_t *dbhdr, struct employee_t **employees, char *
 
     dbhdr->count++;
 
-    printf("Name: %s| Addres: %s| Hours: %s\n", name, address, hours);
+    /* printf("Name: %s| Addres: %s| Hours: %s\n", name, address, hours); */
     strncpy(e[dbhdr->count-1].name, name, sizeof(e[dbhdr->count-1].name)-1);
     strncpy(e[dbhdr->count-1].address, address, sizeof(e[dbhdr->count-1].address)-1);
     e[dbhdr->count-1].hours = atoi(hours);
@@ -100,6 +162,9 @@ int output_file(int fd, struct dbheader_t *dbhdr, struct employee_t *employees) 
         employees[i].hours = htonl(employees[i].hours);
         write(fd, &employees[i], sizeof(struct employee_t));
     }
+
+    off_t new_size = sizeof(struct dbheader_t) + sizeof(struct employee_t) * realcount;
+    ftruncate(fd, new_size);
 
     return STATUS_SUCCESS;
 }	
